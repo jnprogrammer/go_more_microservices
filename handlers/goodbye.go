@@ -9,7 +9,7 @@ type Goodbye struct {
 	l *log.Logger
 }
 
-func NewGoodBye(l *log.Logger) *Goodbye {
+func NewGoodbye(l *log.Logger) *Goodbye {
 	return &Goodbye{l}
 }
 
