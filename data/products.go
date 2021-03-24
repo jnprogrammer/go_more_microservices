@@ -4,14 +4,14 @@ import "time"
 
 // Product defines the structure for an APU product
 type Product struct {
-	ID          int
-	Name        string
-	Description string
-	Price       float32
-	SKU         string
-	CreatedOn   string
-	UpdateOn    string
-	DeletedOn   string
+	ID          int     `json:"id"`
+	Name        string  `json: "name"`
+	Description string  `json: "description"`
+	Price       float32 `json:"price"`
+	SKU         string  `json: "sku"`
+	CreatedOn   string  `json:"-"`
+	UpdateOn    string  `json:"-"`
+	DeletedOn   string  `json:"-"`
 }
 
 func GetProcuts() []*Product {
