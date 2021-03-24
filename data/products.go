@@ -1,6 +1,10 @@
 package data
 
-import "time"
+import (
+	"encoding/json"
+	"io"
+	"time"
+)
 
 // Product defines the structure for an APU product
 type Product struct {
@@ -14,7 +18,14 @@ type Product struct {
 	DeletedOn   string  `json:"-"`
 }
 
-func GetProcuts() []*Product {
+type Products []*Product
+
+func (p *Products) ToJSON(w io.Writer) error {
+	e := json.NewEncoder(w)
+	return e.Encode(p)
+}
+
+func GetProcuts() Products {
 	return productList
 }
 
