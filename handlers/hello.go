@@ -11,6 +11,8 @@ type Hello struct {
 	l *log.Logger
 }
 
+// NewHello creates a new hello handler with given logger
+
 func NewHello(l *log.Logger) *Hello {
 	return &Hello{l}
 }
@@ -24,6 +26,5 @@ func (h *Hello) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	//log.Printf("Data %s", d)
-
 	fmt.Fprintf(rw, "You sent the data: %s \n", d)
 }
