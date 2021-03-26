@@ -53,7 +53,8 @@ func (p *Products) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		p.l.Println("got id", id)
+		p.updateProducts(id, rw, r)
+		return
 	}
 	//catch all
 	rw.WriteHeader(http.StatusMethodNotAllowed)
@@ -61,6 +62,7 @@ func (p *Products) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 
 // Instead of having seporate funcs for GETS and POSTS, one func to do it all.
 func (p *Products) getProducts(rw http.ResponseWriter, r *http.Request) {
+	p.l.Println("GET:returning a list of products")
 	lp := data.GetProducts()
 	err := lp.ToJSON(rw)
 	if err != nil {
@@ -70,7 +72,7 @@ func (p *Products) getProducts(rw http.ResponseWriter, r *http.Request) {
 }
 
 func (p *Products) addProduct(rw http.ResponseWriter, r *http.Request) {
-	p.l.Println("Adding a product")
+	p.l.Println("POST:Adding a product")
 	prod := &data.Product{}
 
 	err := prod.FromJSON(r.Body)
@@ -79,4 +81,26 @@ func (p *Products) addProduct(rw http.ResponseWriter, r *http.Request) {
 	}
 	p.l.Printf("Prod: %#v", prod)
 	data.AddProduct(prod)
+}
+
+func (p Products) updateProducts(id int, rw http.ResponseWriter, r *http.Request) {
+	p.l.Println("PUT:updating a product")
+	prod := &data.Product{}
+
+	err := prod.FromJSON(r.Body)
+
+	if err != nil {
+		http.Error(rw, "Can't unmarshal json", http.StatusBadRequest)
+	}
+
+	err = data.UpdateProduct(id, prod)
+	if err == data.ErrProductNotFound {
+		http.Error(rw, "Product not found", http.StatusNotFound)
+		return
+	}
+
+	if err != nil {
+		http.Error(rw, "Product not found", http.StatusInternalServerError)
+		return
+	}
 }
