@@ -39,9 +39,8 @@ func (p *Products) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if len(g[0]) != 1 {
+		if len(g[0]) != 2 {
 			p.l.Println("Invalid URI more than 1 capture group")
-
 			http.Error(rw, "Invalid URI", http.StatusBadRequest)
 			return
 		}
@@ -50,7 +49,6 @@ func (p *Products) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 		id, err := strconv.Atoi(idString)
 		if err != nil {
 			p.l.Println("Invalid URI unable to convert NUMBER ")
-
 			http.Error(rw, "Invalid URI", http.StatusBadRequest)
 			return
 		}
