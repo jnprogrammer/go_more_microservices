@@ -20,6 +20,11 @@ func (p *Products) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if r.Method == http.MethodPost {
+		p.addProduct(rw, r)
+		return
+	}
+
 	//catch all
 	rw.WriteHeader(http.StatusMethodNotAllowed)
 }
@@ -32,4 +37,10 @@ func (p *Products) getProducts(rw http.ResponseWriter, r *http.Request) {
 		http.Error(rw, "Can't marshal jason", http.StatusInternalServerError)
 	}
 
+}
+
+func (p *Products) addProduct(rw http.ResponseWriter, r *http.Request) {
+	p.l.Println("Adding a product")
+	prod := &data.Product{}
+	err := prod.FromJSON(r.Body)
 }
