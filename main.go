@@ -17,9 +17,12 @@ func main() {
 	ph := handlers.NewProducts(l)
 
 	sm := mux.NewRouter()
-	getRouter := sm.Methods("GET").Subrouter()
+
+	getRouter := sm.Methods(http.MethodGet).Subrouter()
 	getRouter.HandleFunc("/", ph.GetProducts)
 	//sm.Handle("/products")
+	putRouter := sm.Methods(http.MethodPut).Subrouter()
+	putRouter.HandleFunc("/{id:[0-9]+}", ph.UpdateProducts)
 
 	s := &http.Server{
 		Addr:         ":9090",
