@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"N/data"
+	"context"
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
@@ -34,16 +35,10 @@ func (p *Products) AddProduct(rw http.ResponseWriter, r *http.Request) {
 
 	p.l.Println("POST:Adding a product")
 
-	prod := &data.Product{}
+	prod := r.Context().Value(KeyProduct{}).(data.Product)
+	data.AddProduct(&prod)
+	//p.l.Printf("Prod: %#v", prod)
 
-	err := prod.FromJSON(r.Body)
-	if err != nil {
-		http.Error(rw, "Can't unmarshal json", http.StatusBadRequest)
-	}
-
-	p.l.Printf("Prod: %#v", prod)
-
-	data.AddProduct(prod)
 }
 
 func (p Products) UpdateProducts(rw http.ResponseWriter, r *http.Request) {
@@ -52,17 +47,13 @@ func (p Products) UpdateProducts(rw http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
 		http.Error(rw, "Can't convert id", http.StatusBadRequest)
+		return
 	}
 
 	p.l.Println("PUT:updating product: ", id)
+	prod := r.Context().Value(KeyProduct{}).(data.Product)
 
-	prod := &data.Product{}
-	err = prod.FromJSON(r.Body)
-	if err != nil {
-		http.Error(rw, "Can't unmarshal json", http.StatusBadRequest)
-	}
-
-	err = data.UpdateProduct(id, prod)
+	err = data.UpdateProduct(id, &prod)
 	if err == data.ErrProductNotFound {
 		http.Error(rw, "Product not found", http.StatusNotFound)
 		return
@@ -72,4 +63,24 @@ func (p Products) UpdateProducts(rw http.ResponseWriter, r *http.Request) {
 		http.Error(rw, "Product not found", http.StatusInternalServerError)
 		return
 	}
+}
+
+type KeyProduct struct {
+}
+
+func (p Products) MiddlewareProductValidation(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
+		prod := &data.Product{}
+
+		err := prod.FromJSON(r.Body)
+		if err != nil {
+			p.l.Println("[ERROR] deserializing productt", err)
+			http.Error(rw, "Error reading product", http.StatusBadRequest)
+			return
+		}
+		ctx := context.WithValue(r.Context(), KeyProduct{}, prod)
+		r = r.WithContext(ctx)
+
+		next.ServeHTTP(rw, r)
+	})
 }
