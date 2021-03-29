@@ -29,7 +29,7 @@ func main() {
 	postRouter.HandleFunc("/", ph.AddProduct)
 	postRouter.Use(ph.MiddlewareProductValidation)
 
-	s := &http.Server{
+	s := http.Server{
 		Addr:         ":9090",
 		Handler:      sm,
 		ErrorLog:     l,
