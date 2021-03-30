@@ -17,7 +17,7 @@ func NewProducts(l *log.Logger) *Products {
 	return &Products{l}
 }
 
-// Instead of having seporate funcs for GETS and POSTS, one func to do it all.
+// Instead of having separate funcs for GETS and POSTS, one func to do it all.
 func (p *Products) GetProducts(rw http.ResponseWriter, r *http.Request) {
 
 	p.l.Println("GET:returning a list of products")

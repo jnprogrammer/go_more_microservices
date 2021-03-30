@@ -3,6 +3,7 @@ package data
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/go-playground/validator/v10"
 	"io"
 	"time"
 )
@@ -10,9 +11,9 @@ import (
 // Product defines the structure for an APU product
 type Product struct {
 	ID          int     `json:"id"`
-	Name        string  `json: "name"`
+	Name        string  `json: "name" validate:"required"`
 	Description string  `json: "description"`
-	Price       float32 `json:"price"`
+	Price       float32 `json:"price" validate:"gt=0"`
 	SKU         string  `json: "sku"`
 	CreatedOn   string  `json:"-"`
 	UpdateOn    string  `json:"-"`
@@ -20,6 +21,11 @@ type Product struct {
 }
 
 type Products []*Product
+
+func (p *Product) Validate() error {
+	validate := validator.New()
+	return validate.Struct(p)
+}
 
 func (p *Products) ToJSON(w io.Writer) error {
 	e := json.NewEncoder(w)
