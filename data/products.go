@@ -21,7 +21,15 @@ type Product struct {
 	DeletedOn   string  `json:"-"`
 }
 
-type Products []*Product
+func (p *Product) FromJSON(r io.Reader) error {
+	e := json.NewDecoder(r)
+	return e.Decode(p)
+}
+
+func (p *Products) ToJSON(w io.Writer) error {
+	e := json.NewEncoder(w)
+	return e.Encode(p)
+}
 
 func (p *Product) Validate() error {
 	validate := validator.New()
@@ -39,15 +47,7 @@ func validateSKU(fl validator.FieldLevel) bool {
 	return true
 }
 
-func (p *Products) ToJSON(w io.Writer) error {
-	e := json.NewEncoder(w)
-	return e.Encode(p)
-}
-
-func (p *Product) FromJSON(r io.Reader) error {
-	e := json.NewDecoder(r)
-	return e.Decode(p)
-}
+type Products []*Product
 
 func GetProducts() Products {
 	return productList
