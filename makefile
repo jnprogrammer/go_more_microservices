@@ -1,2 +1,2 @@
 swagger:
-	swagger generate spec -o ./makeswagger.yaml --scan-models
+	swagger generate spec -o ./swagger.yaml --scan-models
